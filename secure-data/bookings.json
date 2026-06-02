@@ -1,0 +1,21 @@
+[
+  {
+    "id": "83c2942c-6ffe-45ad-9bcd-6ac6701562e8",
+    "status": "Pending Verification",
+    "createdAt": "2026-06-01T13:20:20.321Z",
+    "customerName": "max",
+    "customerPhone": "99999999",
+    "pickup": "amari",
+    "destination": "vang vieng",
+    "date": "2026-06-22",
+    "time": "11:11 AM",
+    "passengers": "2",
+    "document": {
+      "originalName": "WhatsApp-Image-2026-05-29-at-21.40.56.jpeg",
+      "storedName": "83c2942c-6ffe-45ad-9bcd-6ac6701562e8-WhatsApp-Image-2026-05-29-at-21.40.56.jpeg.jpg",
+      "mimeType": "image/jpeg",
+      "bytes": 134795,
+      "url": "/api/bookings/83c2942c-6ffe-45ad-9bcd-6ac6701562e8/document"
+    }
+  }
+]
