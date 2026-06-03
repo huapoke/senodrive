@@ -1,0 +1,950 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import {
+  ArrowRight,
+  CalendarDays,
+  Car,
+  Check,
+  ChevronDown,
+  Clock,
+  Crown,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Menu,
+  MessageCircle,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Users,
+  X
+} from 'lucide-react';
+import './styles.css';
+
+const pages = ['Home', 'Services', 'Fleet', 'About', 'Contact', 'Booking'];
+
+const carImage = './assets/hero-city-transport.jpg';
+const cabinImage =
+  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=85';
+const pricingImage = './assets/pricing-patuxai-day-car.png';
+
+function slug(page) {
+  return page.toLowerCase().replace(/\s+/g, '-');
+}
+
+function pageFromPath() {
+  const current = window.location.pathname.replace('/', '');
+  const match = pages.find((page) => slug(page) === current);
+  return match || 'Home';
+}
+
+function App() {
+  const [page, setPage] = useState(pageFromPath());
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const onPop = () => setPage(pageFromPath());
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const navigate = (nextPage) => {
+    setPage(nextPage);
+    setMenuOpen(false);
+    const path = nextPage === 'Home' ? '/' : `/${slug(nextPage)}`;
+    window.history.pushState({}, '', path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="min-h-screen bg-onyx text-stone-100 antialiased">
+      <Navbar page={page} navigate={navigate} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <main>
+        {page === 'Home' && <Home navigate={navigate} />}
+        {page === 'Services' && <Services navigate={navigate} />}
+        {page === 'Fleet' && <Fleet navigate={navigate} />}
+        {page === 'About' && <About navigate={navigate} />}
+        {page === 'Contact' && <Contact navigate={navigate} />}
+        {page === 'Booking' && <Booking />}
+      </main>
+      <Footer navigate={navigate} />
+    </div>
+  );
+}
+
+function Navbar({ page, navigate, menuOpen, setMenuOpen }) {
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-xl">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <button
+          onClick={() => navigate('Home')}
+          className="group flex items-center gap-3 text-left"
+          aria-label="seno start up home"
+        >
+          <span className="grid h-11 w-11 place-items-center rounded-full border border-champagne/50 bg-champagne/10 text-champagne shadow-glow transition group-hover:bg-champagne group-hover:text-black">
+            <Crown size={22} />
+          </span>
+          <span>
+            <span className="block text-lg font-semibold tracking-wide text-white">seno start up</span>
+            <span className="block text-xs uppercase tracking-[0.28em] text-champagne/80">Private Chauffeur</span>
+          </span>
+        </button>
+
+        <div className="hidden items-center gap-1 lg:flex">
+          {pages.map((item) => (
+            <NavButton key={item} active={page === item} onClick={() => navigate(item)}>
+              {item}
+            </NavButton>
+          ))}
+        </div>
+
+        <div className="hidden items-center gap-3 lg:flex">
+          <a
+            href="https://wa.me/8562092934881?text=Hello%20seno%20start%20up%2C%20I%27d%20like%20to%20book%20a%20private%20car."
+            target="_blank"
+            rel="noreferrer"
+            className="icon-button"
+            aria-label="Book on WhatsApp"
+          >
+            <MessageCircle size={19} />
+          </a>
+          <button onClick={() => navigate('Booking')} className="gold-button">
+            Reserve Now
+          </button>
+        </div>
+
+        <button
+          className="icon-button lg:hidden"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle navigation"
+        >
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </nav>
+
+      {menuOpen && (
+        <div className="border-t border-white/10 bg-black/95 px-4 pb-5 lg:hidden">
+          <div className="mx-auto grid max-w-7xl gap-2 pt-3">
+            {pages.map((item) => (
+              <button
+                key={item}
+                onClick={() => navigate(item)}
+                className={`rounded-lg px-4 py-3 text-left text-sm font-medium transition ${
+                  page === item ? 'bg-champagne text-black' : 'text-stone-200 hover:bg-white/10'
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
+
+function NavButton({ active, onClick, children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+        active ? 'bg-champagne text-black' : 'text-stone-300 hover:bg-white/10 hover:text-white'
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Home({ navigate }) {
+  return (
+    <>
+      <section className="relative flex min-h-[92vh] items-center overflow-hidden pt-24">
+        <div className="absolute inset-0">
+          <img src={carImage} alt="City road at sunset for private transport service" className="h-full w-full object-cover opacity-70 animate-slowPan" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.94)_0%,rgba(0,0,0,0.72)_42%,rgba(0,0,0,0.16)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-onyx to-transparent" />
+        </div>
+        <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+          <div className="max-w-3xl animate-fadeUp">
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-champagne/30 bg-black/35 px-4 py-2 text-sm text-champagne backdrop-blur">
+              <Sparkles size={16} /> Luxury airport, hourly and executive transfers
+            </p>
+            <h1 className="text-5xl font-semibold leading-tight text-white sm:text-6xl lg:text-7xl">
+              Private car booking with polished precision.
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-300">
+              Book discreet chauffeurs, immaculate vehicles and door-to-door comfort for business travel, nights out and airport arrivals.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button onClick={() => navigate('Booking')} className="gold-button justify-center px-7 py-4 text-base">
+                Book Your Ride <ArrowRight size={19} />
+              </button>
+              <button onClick={() => navigate('Fleet')} className="dark-button justify-center px-7 py-4 text-base">
+                View Fleet
+              </button>
+            </div>
+          </div>
+          <BookingPanel compact />
+        </div>
+      </section>
+      <TrustBar />
+      <ServicesPreview navigate={navigate} />
+      <FleetPreview navigate={navigate} />
+      <Testimonials />
+      <Pricing navigate={navigate} />
+      <FAQ />
+    </>
+  );
+}
+
+function TrustBar() {
+  const stats = [
+    ['24/7', 'Concierge dispatch'],
+    ['4.9/5', 'Client rating'],
+    ['18 min', 'Average response'],
+    ['120+', 'Corporate accounts']
+  ];
+  return (
+    <section className="border-y border-white/10 bg-graphite">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-8 sm:px-6 md:grid-cols-4 lg:px-8">
+        {stats.map(([value, label]) => (
+          <div key={label} className="text-center">
+            <div className="text-3xl font-semibold text-champagne">{value}</div>
+            <div className="mt-1 text-sm text-stone-400">{label}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ServicesPreview({ navigate }) {
+  const services = [
+    ['Airport Transfers', 'Flight tracking, meet-and-greet service and luggage support.'],
+    ['Executive Chauffeur', 'Daily business transport with privacy-first professional drivers.'],
+    ['Events & Evenings', 'Premium arrivals for dinners, weddings, premieres and private nights.']
+  ];
+  return (
+    <section className="section">
+      <SectionHeader eyebrow="Services" title="Every journey handled with quiet confidence." />
+      <div className="grid gap-5 md:grid-cols-3">
+        {services.map(([title, text], index) => (
+          <FeatureCard key={title} title={title} text={text} icon={[MapPin, ShieldCheck, Star][index]} />
+        ))}
+      </div>
+      <div className="mt-9 text-center">
+        <button onClick={() => navigate('Services')} className="dark-button mx-auto">
+          Explore Services <ArrowRight size={18} />
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function FleetPreview({ navigate }) {
+  return (
+    <section className="section pt-0">
+      <SectionHeader eyebrow="Fleet" title="Choose your standard of arrival." />
+      <p className="mx-auto max-w-2xl text-center text-lg leading-8 text-stone-400">
+        Our concierge will match the right private vehicle to your route, passenger count and occasion.
+      </p>
+      <div className="mt-9 text-center">
+        <button onClick={() => navigate('Fleet')} className="gold-button mx-auto">
+          Browse Fleet <ArrowRight size={18} />
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function Services({ navigate }) {
+  const items = [
+    ['Airport Black Car', 'Scheduled pickups, arrival monitoring and premium terminal coordination.', 'From $95'],
+    ['Hourly Chauffeur', 'A dedicated driver retained for multi-stop itineraries and flexible timing.', 'From $120/hr'],
+    ['Corporate Travel', 'Centralized bookings, executive profiles and monthly account reporting.', 'Custom'],
+    ['Private Events', 'Elegant transport planning for weddings, galas, dinners and VIP arrivals.', 'From $180'],
+    ['City-to-City', 'Long-distance comfort with bottled water, Wi-Fi and route optimization.', 'Quote'],
+    ['Security Detail', 'Low-profile drivers, privacy protocols and coordinated transport plans.', 'Custom']
+  ];
+  return (
+    <PageShell eyebrow="Services" title="Private transport for moments that require polish." text="Select a service and move straight into a tailored reservation request.">
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {items.map(([title, text, price]) => (
+          <article key={title} className="premium-card flex min-h-64 flex-col justify-between">
+            <div>
+              <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-champagne/10 text-champagne">
+                <Car size={23} />
+              </div>
+              <h3 className="text-xl font-semibold text-white">{title}</h3>
+              <p className="mt-3 leading-7 text-stone-400">{text}</p>
+            </div>
+            <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5">
+              <span className="font-semibold text-champagne">{price}</span>
+              <button onClick={() => navigate('Booking')} className="text-sm font-semibold text-white hover:text-champagne">
+                Reserve
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </PageShell>
+  );
+}
+
+function Fleet({ navigate }) {
+  return (
+    <PageShell eyebrow="Fleet" title="A composed fleet for business, leisure and VIP travel." text="Each vehicle is detailed daily, stocked for comfort and matched to your route.">
+      <div className="premium-card max-w-3xl">
+        <h2 className="text-2xl font-semibold text-white">Vehicle matching by request</h2>
+        <p className="mt-4 leading-7 text-stone-400">
+          Share your pickup, destination, passenger count and preferred experience. Dispatch will confirm a suitable luxury sedan, SUV or group vehicle with availability and pricing.
+        </p>
+        <button onClick={() => navigate('Booking')} className="gold-button mt-6">
+          Request a Vehicle <ArrowRight size={18} />
+        </button>
+      </div>
+    </PageShell>
+  );
+}
+
+function About({ navigate }) {
+  return (
+    <PageShell eyebrow="About" title="A chauffeur company built around discretion and detail." text="seno start up serves founders, families, artists and corporate travel teams who value calm logistics.">
+      <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="overflow-hidden rounded-2xl border border-white/10">
+          <img src={cabinImage} alt="Luxury car interior" className="h-full min-h-96 w-full object-cover" />
+        </div>
+        <div className="space-y-5">
+          {[
+            ['Vetted Chauffeurs', 'Every driver is background checked, hospitality trained and briefed before arrival.'],
+            ['Privacy by Design', 'Client notes, route preferences and itineraries are handled with strict discretion.'],
+            ['Operational Control', 'Dispatch monitors flights, traffic and timing so your journey feels effortless.']
+          ].map(([title, text], index) => (
+            <FeatureCard key={title} title={title} text={text} icon={[ShieldCheck, Crown, Clock][index]} />
+          ))}
+          <button onClick={() => navigate('Booking')} className="gold-button">
+            Plan a Journey <ArrowRight size={18} />
+          </button>
+        </div>
+      </div>
+    </PageShell>
+  );
+}
+
+function Contact({ navigate }) {
+  return (
+    <PageShell eyebrow="Contact" title="Concierge support whenever your plans move." text="Speak with dispatch, request a quote or reserve instantly through WhatsApp.">
+      <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+        <div className="space-y-4">
+          <ContactItem icon={Phone} title="02092934881" text="24/7 booking concierge" />
+          <ContactItem icon={Mail} title="senoco.advice@gmail.com" text="Quotes and corporate accounts" />
+          <ContactItem icon={MapPin} title="Lao, Vientiane" text="Additional cities by request" />
+          <button onClick={() => navigate('Booking')} className="gold-button w-full justify-center sm:w-auto">
+            Open Booking Page
+          </button>
+        </div>
+        <BookingPanel />
+      </div>
+    </PageShell>
+  );
+}
+
+function Booking() {
+  return (
+    <PageShell eyebrow="Booking" title="Reserve a private car." text="Submit trip details and continue by WhatsApp for the fastest confirmation.">
+      <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+        <BookingPanel />
+        <div className="premium-card">
+          <h3 className="text-2xl font-semibold text-white">What happens next</h3>
+          <div className="mt-6 space-y-5">
+            {[
+              ['Trip Review', 'Concierge checks timing, route and vehicle fit.'],
+              ['Fast Confirmation', 'You receive driver details and a clear quote.'],
+              ['White-Glove Pickup', 'Your chauffeur arrives early and coordinates discreetly.']
+            ].map(([title, text], index) => (
+              <div key={title} className="flex gap-4">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-champagne text-sm font-bold text-black">{index + 1}</span>
+                <div>
+                  <h4 className="font-semibold text-white">{title}</h4>
+                  <p className="mt-1 text-sm leading-6 text-stone-400">{text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </PageShell>
+  );
+}
+
+function BookingPanel({ compact = false }) {
+  const [form, setForm] = useState({
+    customerName: '',
+    customerPhone: '',
+    pickup: '',
+    destination: '',
+    date: '',
+    time: '',
+    passengers: '2'
+  });
+  const [verificationFile, setVerificationFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [uploadError, setUploadError] = useState('');
+  const [documentCheckMessage, setDocumentCheckMessage] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [confirmationSuccess, setConfirmationSuccess] = useState(false);
+  const [bookingStatus, setBookingStatus] = useState('Pending Verification');
+
+  const apiBase = 'http://127.0.0.1:8787';
+
+  const formattedTime = useMemo(() => {
+    if (!form.time) return 'Not specified';
+
+    const [hourText, minuteText] = form.time.split(':');
+    const hour = Number(hourText);
+    const minute = minuteText || '00';
+
+    if (Number.isNaN(hour)) return form.time;
+
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minute} ${period}`;
+  }, [form.time]);
+
+  const whatsappUrl = useMemo(() => {
+    const message = `Hello seno start up, I would like to book a private car.%0A%0APickup: ${encodeURIComponent(form.pickup || 'Not specified')}%0ADestination: ${encodeURIComponent(form.destination || 'Not specified')}%0ADate: ${encodeURIComponent(form.date || 'Not specified')}%0ATime: ${encodeURIComponent(formattedTime)}%0APassengers: ${encodeURIComponent(form.passengers || 'Not specified')}`;
+    return `https://wa.me/8562092934881?text=${message}`;
+  }, [form, formattedTime]);
+
+  const notificationUrl = useMemo(() => {
+    const message = [
+      'New booking confirmation request',
+      '',
+      `Customer name: ${form.customerName || 'Not specified'}`,
+      `Customer phone: ${form.customerPhone || 'Not specified'}`,
+      `Pickup: ${form.pickup || 'Not specified'}`,
+      `Destination: ${form.destination || 'Not specified'}`,
+      `Date: ${form.date || 'Not specified'}`,
+      `Time: ${formattedTime}`,
+      `Passengers: ${form.passengers || 'Not specified'}`,
+      '',
+      `Verification document selected: ${verificationFile?.name || 'Not uploaded'}`,
+      'Automatic document check: passed file type, size, and clarity requirements.',
+      'ACTION REQUIRED: Customer must attach the passport or ID card photo in this WhatsApp chat now for immediate verification.',
+      'Please verify the customer passport or ID card immediately.'
+    ].join('\n');
+
+    return `https://wa.me/8562092934881?text=${encodeURIComponent(message)}`;
+  }, [form, formattedTime, verificationFile]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  const update = (event) => {
+    setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+    setConfirmationSuccess(false);
+  };
+
+  const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('The upload failed. Please try again.'));
+    reader.readAsDataURL(file);
+  });
+
+  const resetFileState = () => {
+    setVerificationFile(null);
+    setPreviewUrl('');
+    setDocumentCheckMessage('');
+    setConfirmationSuccess(false);
+    setBookingStatus('Pending Verification');
+  };
+
+  const failDocumentCheck = (message) => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    resetFileState();
+    setUploadError(message);
+  };
+
+  const handleFile = (file) => {
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    const allowedExtension = /\.(jpe?g|png|pdf)$/i.test(file.name);
+    const minimumSize = 50 * 1024;
+    const maximumSize = 10 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type) && !allowedExtension) {
+      failDocumentCheck('Document check failed. Please upload a JPG, PNG, or PDF passport or valid ID card only.');
+      return;
+    }
+
+    if (file.size < minimumSize) {
+      failDocumentCheck('Document check failed. The file is too small to verify clearly. Please upload a clearer passport or valid ID card.');
+      return;
+    }
+
+    if (file.size > maximumSize) {
+      failDocumentCheck('Document check failed. The file is too large. Please upload a JPG, PNG, or PDF under 10 MB.');
+      return;
+    }
+
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+    const acceptDocument = () => {
+      setVerificationFile(file);
+      setPreviewUrl(nextPreviewUrl);
+      setUploadError('');
+      setDocumentCheckMessage('Document passed automatic format and clarity checks. Authenticity will be verified before final dispatch.');
+      setConfirmationSuccess(false);
+    };
+
+    if (file.type?.startsWith('image/') || /\.(jpe?g|png)$/i.test(file.name)) {
+      const image = new Image();
+      image.onload = () => {
+        if (image.naturalWidth < 600 || image.naturalHeight < 400) {
+          URL.revokeObjectURL(nextPreviewUrl);
+          failDocumentCheck('Document check failed. The image is too small or unclear. Please upload a sharper passport or valid ID card.');
+          return;
+        }
+        acceptDocument();
+      };
+      image.onerror = () => {
+        URL.revokeObjectURL(nextPreviewUrl);
+        failDocumentCheck('Document check failed. The image could not be read. Please upload a clear JPG or PNG.');
+      };
+      image.src = nextPreviewUrl;
+      return;
+    }
+
+    acceptDocument();
+  };
+
+  const clearVerification = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    resetFileState();
+    setUploadError('');
+    setIsConfirming(false);
+  };
+
+  const confirmBooking = async () => {
+    const requiredFields = [
+      ['customerName', 'Customer name'],
+      ['customerPhone', 'Customer phone number'],
+      ['pickup', 'Pickup location'],
+      ['destination', 'Destination'],
+      ['date', 'Date'],
+      ['time', 'Time'],
+      ['passengers', 'Passenger count']
+    ];
+
+    const missingField = requiredFields.find(([name]) => !String(form[name] || '').trim());
+    if (missingField) {
+      setUploadError(`${missingField[1]} is required before booking confirmation.`);
+      setConfirmationSuccess(false);
+      return;
+    }
+
+    if (!verificationFile) {
+      setUploadError('Booking confirmation failed. Please upload a real, clear passport or valid ID card before confirming.');
+      setConfirmationSuccess(false);
+      return;
+    }
+
+    setUploadError('');
+    setIsConfirming(true);
+    setBookingStatus('Pending Verification');
+
+    try {
+      const documentDataUrl = await fileToDataUrl(verificationFile);
+      const response = await fetch(`${apiBase}/api/bookings`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          formattedTime,
+          document: {
+            name: verificationFile.name,
+            type: verificationFile.type,
+            dataUrl: documentDataUrl
+          }
+        })
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Upload failed. Booking confirmation is blocked.');
+      }
+
+      setIsConfirming(false);
+      setConfirmationSuccess(true);
+      setBookingStatus(result.booking?.status || 'Pending Verification');
+    } catch (error) {
+      setIsConfirming(false);
+      setConfirmationSuccess(false);
+      setBookingStatus('Rejected');
+      setUploadError(error.message || 'Upload failed. Booking confirmation is blocked.');
+    }
+  };
+
+  return (
+    <form className={`premium-card animate-fadeUp ${compact ? 'lg:ml-auto lg:max-w-md' : ''}`}>
+      <div className="mb-6">
+        <p className="text-sm uppercase tracking-[0.24em] text-champagne/80">Quick booking</p>
+        <h2 className="mt-2 text-2xl font-semibold text-white">Request a chauffeur</h2>
+      </div>
+      <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field icon={Users} label="Customer name" name="customerName" value={form.customerName} onChange={update} placeholder="Full name" />
+          <Field icon={Phone} label="Customer phone number" name="customerPhone" value={form.customerPhone} onChange={update} placeholder="WhatsApp or mobile number" />
+        </div>
+        <Field icon={MapPin} label="Pickup location" name="pickup" value={form.pickup} onChange={update} placeholder="Hotel, airport or address" />
+        <Field icon={MapPin} label="Destination" name="destination" value={form.destination} onChange={update} placeholder="Final destination" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field icon={CalendarDays} type="date" label="Date" name="date" value={form.date} onChange={update} />
+          <Field icon={Clock} type="time" label="Time" name="time" value={form.time} onChange={update} />
+        </div>
+        <Field icon={Users} type="number" min="1" max="12" label="Passenger count" name="passengers" value={form.passengers} onChange={update} />
+        <p className="rounded-xl border border-champagne/25 bg-champagne/10 px-4 py-3 text-sm font-semibold text-champagne">
+          Booking confirmation requires a passport or ID card for verification purposes.
+        </p>
+        <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-semibold text-white">
+          Booking status: <span className="text-champagne">{bookingStatus}</span>
+        </div>
+        <div>
+          <p className="mb-2 text-sm font-medium text-stone-300">Passport or National ID Card</p>
+          <label
+            onDragEnter={(event) => {
+              event.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={(event) => {
+              event.preventDefault();
+              setIsDragging(false);
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              setIsDragging(false);
+              handleFile(event.dataTransfer.files?.[0]);
+            }}
+            className={`group block cursor-pointer rounded-2xl border border-dashed p-5 text-center transition duration-300 ${
+              isDragging ? 'border-champagne bg-champagne/15 shadow-gold' : 'border-white/15 bg-black/35 hover:-translate-y-0.5 hover:border-champagne/60 hover:bg-white/[0.06]'
+            }`}
+          >
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf"
+              className="sr-only"
+              onChange={(event) => handleFile(event.target.files?.[0])}
+            />
+            <ShieldCheck className="mx-auto text-champagne" size={30} />
+            <span className="mt-3 block font-semibold text-white">Upload verification document</span>
+            <span className="mt-1 block text-sm leading-6 text-stone-400">
+              Drag and drop your passport or national ID card, or tap to browse. JPG, PNG, and PDF only.
+            </span>
+          </label>
+          <p className="mt-3 text-xs leading-5 text-stone-500">
+            Unclear, unsupported, too-small, oversized, or failed uploads are rejected automatically. Confirmation is blocked until the document is received by the booking system.
+          </p>
+        </div>
+        {uploadError && (
+          <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200">
+            {uploadError}
+          </p>
+        )}
+        {documentCheckMessage && (
+          <p className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-200">
+            {documentCheckMessage}
+          </p>
+        )}
+        {verificationFile && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-white">{verificationFile.name}</p>
+                <p className="mt-1 text-xs text-stone-500">{verificationFile.type || 'Selected document'}</p>
+              </div>
+              <button type="button" onClick={clearVerification} className="icon-button h-9 w-9" aria-label="Cancel uploaded document">
+                <X size={17} />
+              </button>
+            </div>
+            {verificationFile.type?.startsWith('image/') ? (
+              <img src={previewUrl} alt="Uploaded verification document preview" className="mt-4 max-h-56 w-full rounded-xl object-cover" />
+            ) : (
+              <div className="mt-4 rounded-xl border border-white/10 bg-black/30 px-4 py-5 text-sm text-stone-300">
+                PDF document ready for verification.
+              </div>
+            )}
+          </div>
+        )}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={confirmBooking}
+            disabled={isConfirming}
+            className="gold-button justify-center py-4 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isConfirming ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/25 border-t-black" />
+                Verifying
+              </>
+            ) : (
+              <>
+                <Check size={18} />
+                Confirm Booking
+              </>
+            )}
+          </button>
+          <button type="button" onClick={clearVerification} className="dark-button justify-center py-4">
+            Cancel
+          </button>
+        </div>
+        {confirmationSuccess && (
+          <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-200">
+            <p>Booking submitted successfully and marked Pending Verification. The admin notification API received the booking details and uploaded verification document.</p>
+          </div>
+        )}
+      </div>
+      <a href={whatsappUrl} target="_blank" rel="noreferrer" className="gold-button mt-6 w-full justify-center py-4">
+        <MessageCircle size={19} /> Book on WhatsApp
+      </a>
+    </form>
+  );
+}
+
+function Field({ icon: Icon, label, ...props }) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-medium text-stone-300">{label}</span>
+      <span className="relative block">
+        <Icon className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-champagne/80" size={18} />
+        <input
+          {...props}
+          className="w-full rounded-xl border border-white/10 bg-black/45 py-3.5 pl-12 pr-4 text-white outline-none transition placeholder:text-stone-600 focus:border-champagne/70 focus:bg-black/70 focus:ring-4 focus:ring-champagne/10"
+        />
+      </span>
+    </label>
+  );
+}
+
+function FeatureCard({ title, text, icon: Icon }) {
+  return (
+    <article className="premium-card transition duration-300 hover:-translate-y-1 hover:border-champagne/35 hover:shadow-gold">
+      <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-champagne/10 text-champagne">
+        <Icon size={23} />
+      </div>
+      <h3 className="text-xl font-semibold text-white">{title}</h3>
+      <p className="mt-3 leading-7 text-stone-400">{text}</p>
+    </article>
+  );
+}
+
+function Testimonials() {
+  const quotes = [
+    ['The calmest airport arrival I have ever had. Driver was waiting before wheels down.', 'Maya C.', 'Founder'],
+    ['seno start up handles our board travel flawlessly. The dispatch team is sharp and responsive.', 'Julian R.', 'COO'],
+    ['Beautiful vehicle, discreet driver, perfect timing. Exactly what a luxury service should be.', 'Nadia S.', 'Private client']
+  ];
+  return (
+    <section className="section pt-0">
+      <SectionHeader eyebrow="Testimonials" title="Trusted by clients who notice details." />
+      <div className="grid gap-5 md:grid-cols-3">
+        {quotes.map(([quote, name, role]) => (
+          <article key={name} className="premium-card">
+            <div className="mb-5 flex gap-1 text-champagne">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star key={index} size={17} fill="currentColor" />
+              ))}
+            </div>
+            <p className="leading-7 text-stone-300">"{quote}"</p>
+            <div className="mt-6 border-t border-white/10 pt-4">
+              <div className="font-semibold text-white">{name}</div>
+              <div className="text-sm text-stone-500">{role}</div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Pricing({ navigate }) {
+  const routePrices = [
+    ['Vientiane → Buddha Park', '250,000 kip'],
+    ['Vientiane → Vientiane Railway Station', '210,000 kip'],
+    ['Vientiane → Vang Vieng', '2,200,000 kip'],
+    ['Vientiane → Muang Feuang', '2,200,000 kip'],
+    ['Vientiane → Luang Prabang', '10,000,000 kip'],
+    ['Vientiane → Thakhek', '4,000,000 kip'],
+    ['Vientiane → Pakse', '7,000,000 kip'],
+    ['Vientiane → Champasak', '10,000,000 kip'],
+    ['Vientiane → Vietnam border crossing', '10,000,000 kip'],
+    ['Wattay Airport → Lao-China Railway Station', '230,000 kip'],
+    ['Border crossing → Wattay Airport', '270,000 kip'],
+    ['Border → LaoChina Railway Station', '250,000 kip'],
+    ['Vientiane city tour (full day)', '2,200,000 kip']
+  ];
+
+  return (
+    <section className="section bg-graphite/70">
+      <SectionHeader eyebrow="Pricing" title="Transparent starting rates." />
+      <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="overflow-hidden rounded-2xl border border-white/10">
+          <img src={pricingImage} alt="Black transport car in front of Patuxai for pricing requests" className="h-full max-h-[560px] w-full object-cover" />
+        </div>
+        <div className="premium-card">
+          <h3 className="text-2xl font-semibold text-white">Popular route prices</h3>
+          <p className="mt-4 leading-7 text-stone-400">
+            Clear starting prices for common private transport routes from Vientiane.
+          </p>
+          <p className="mt-4 rounded-xl border border-champagne/25 bg-champagne/10 px-4 py-3 text-sm font-semibold text-champagne">
+            All listed prices include up to 4 people.
+          </p>
+          <div className="mt-6 grid gap-3">
+            {routePrices.map(([route, price]) => (
+              <div key={route} className="flex flex-col gap-2 rounded-xl border border-white/10 bg-black/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <span className="font-medium text-stone-200">{route}</span>
+                <span className="font-semibold text-champagne">{price}</span>
+              </div>
+            ))}
+          </div>
+          <button onClick={() => navigate('Booking')} className="gold-button mt-6">
+            Get Pricing <ArrowRight size={18} />
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FAQ() {
+  const faqs = [
+    ['Can I book same-day?', 'Yes. WhatsApp booking is fastest for same-day or late-night requests.'],
+    ['Are prices fixed?', 'Quotes are confirmed before dispatch and include vehicle class, route and wait-time rules.'],
+    ['Do you support corporate accounts?', 'Yes. We support executive profiles, recurring routes and monthly reporting.'],
+    ['Can I request a specific vehicle?', 'Absolutely. Add the vehicle preference in your message and dispatch will confirm availability.']
+  ];
+  return (
+    <section className="section">
+      <SectionHeader eyebrow="FAQ" title="Useful answers before you reserve." />
+      <div className="mx-auto max-w-4xl space-y-3">
+        {faqs.map(([question, answer]) => (
+          <details key={question} className="group rounded-xl border border-white/10 bg-white/[0.04] p-5">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-white">
+              {question}
+              <ChevronDown className="shrink-0 text-champagne transition group-open:rotate-180" size={20} />
+            </summary>
+            <p className="mt-4 leading-7 text-stone-400">{answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ContactItem({ icon: Icon, title, text }) {
+  return (
+    <div className="premium-card flex items-start gap-4">
+      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-champagne/10 text-champagne">
+        <Icon size={21} />
+      </div>
+      <div>
+        <h3 className="font-semibold text-white">{title}</h3>
+        <p className="mt-1 text-sm text-stone-400">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function SectionHeader({ eyebrow, title }) {
+  return (
+    <div className="mx-auto mb-10 max-w-3xl text-center">
+      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-champagne/80">{eyebrow}</p>
+      <h2 className="mt-3 text-3xl font-semibold leading-tight text-white sm:text-5xl">{title}</h2>
+    </div>
+  );
+}
+
+function PageShell({ eyebrow, title, text, children }) {
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-20 pt-32 sm:px-6 lg:px-8">
+      <div className="mb-10 max-w-4xl animate-fadeUp">
+        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-champagne/80">{eyebrow}</p>
+        <h1 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-6xl">{title}</h1>
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-400">{text}</p>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Footer({ navigate }) {
+  return (
+    <footer className="border-t border-white/10 bg-black">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-8">
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-full border border-champagne/50 bg-champagne/10 text-champagne">
+              <Crown size={20} />
+            </span>
+            <span className="text-lg font-semibold text-white">seno start up</span>
+          </div>
+          <p className="mt-4 max-w-md leading-7 text-stone-500">
+            Premium private car booking for travelers who expect timing, discretion and polished service.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-white">Navigation</h3>
+          <div className="mt-4 grid gap-2">
+            {pages.map((item) => (
+              <button key={item} onClick={() => navigate(item)} className="w-fit text-sm text-stone-400 hover:text-champagne">
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h3 className="font-semibold text-white">Social</h3>
+          <div className="mt-4 flex gap-3">
+            {[
+              [Instagram, 'Instagram'],
+              [Facebook, 'Facebook'],
+              [Linkedin, 'LinkedIn']
+            ].map(([Icon, label]) => (
+              <a key={label} href="#" className="icon-button" aria-label={label}>
+                <Icon size={18} />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="border-t border-white/10 px-4 py-5 text-center text-sm text-stone-600">
+        © 2026 seno start up. Private luxury chauffeur service.
+      </div>
+    </footer>
+  );
+}
+
+createRoot(document.getElementById('root')).render(<App />);
